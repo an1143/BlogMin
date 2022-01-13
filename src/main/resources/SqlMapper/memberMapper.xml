@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+ <mapper namespace="com.mingyu.dao.MemberDAO">         <!--    #{} 이것 get메소드를 불러오는것임 -->  
+ 
+
+	
+	
+	<insert id="insertMember">
+	
+	insert into tbl_member(USERID,USERPWD,USERNAME,EMAIL) values (#{USERID}, #{USERPWD}, #{USERNAME}, #{EMAIL})
+	</insert>
+	
+			
+
+	
+	
+	
+	
+</mapper>

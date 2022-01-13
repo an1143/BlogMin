@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.1.xsd">
+
+<security:http pattern="/include/**" security="none"></security:http>
+<security:http pattern="/img1/**" security="none"></security:http>
+<security:http auto-config="true" use-expressions="true" create-session="never">
+	
+	
+	<!-- 관리자 영역 설정 admin이 포함된 디렉토리 권한-->
+	<!-- <security:intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')"/> -->
+	
+	<security:intercept-url pattern="/user/**" access="permitAll"/> 
+	<!-- 권한에 관계없이 접속 가능 영역 -->
+	<security:intercept-url pattern="/admin" access="hasAnyRole('ROLE_USER','ROLE_TEST','ROLE_ADMIN','ROLE_GUEST')"/>
+	<!-- 로그인한 사용자 영역 -->
+	
+		
+	     <security:form-login login-page="/user/login"
+							 login-processing-url="/user/login_check.jsp"
+							 authentication-success-handler-ref="userLoginSuccessHandler"
+							 authentication-failure-handler-ref="userLoginFailureHandler"
+							 username-parameter="userid"
+							 password-parameter="password"
+							 />
+	
+	<!--max-sessions 동시 접속 막기  ..error-if-maximum-exceeded 로그인 세션 초과시 에러 옵션.. expired-url 세션 만료시 이동할 주소 -->
+		<security:session-management>
+			<security:concurrency-control max-sessions="1" expired-url="/user/login.jsp" error-if-maximum-exceeded="true"/>
+		</security:session-management>
+
+
+	<!-- 로그아웃 관련 처리 -->
+		<security:logout delete-cookies="JSESSIONID, SPRING_SECURITY_REMEMBER_ME_COOKIE"
+						 logout-success-url="/"
+						 logout-url="/user/logout.html"
+						 invalidate-session="true"/>
+
+
+
+		<!-- 접근 권한이 없는 경우 코드 -->
+		<security:access-denied-handler  ref="userDeniedHandler"/>
+		
+		
+</security:http>
+	
+
+	
+	 
+	
+	                
+	<beans:bean id="userDeniedHandler" class="com.mingyu.security.UserDeniedHandler"></beans:bean>
+	<beans:bean id="userLoginSuccessHandler" class="com.mingyu.security.UserLoginSuccessHandler"> </beans:bean>
+	<beans:bean id="userLoginFailureHandler" class="com.mingyu.security.UserLoginFailureHandler"> </beans:bean>
+	
+	
+	
+	<!-- 사용자가 입력한 비밀번호를 암호화된 비밀번호와 체크하는 로직이 포함됨 -->
+	<security:authentication-manager>
+		<security:authentication-provider user-service-ref="userService">
+			<security:password-encoder ref="passwordEncoder">
+				<security:salt-source user-property="username"/>
+			</security:password-encoder>
+		</security:authentication-provider>
+	</security:authentication-manager>  
+	
+		
+		<beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.ShaPasswordEncoder">
+		<beans:constructor-arg name="strength" value="256"> </beans:constructor-arg>
+	    </beans:bean>
+	
+	
+	
+	<!-- 로그인 인증을 처리하는 빈 -->
+		
+		
+ 	<beans:bean id="userService" class="com.mingyu.security.UserAuthenticationService">
+<!--  		<beans:constructor-arg name="sqlSession" ref="sqlSession"> </beans:constructor-arg>  -->
+	</beans:bean>
+	  
+	
+
+
+	
+	<context:component-scan base-package="com.mingyu" />
+	
+</beans:beans>

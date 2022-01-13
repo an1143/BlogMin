@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+     <mapper namespace="com.mingyu.dao.ReplyDAO">         <!--    #{} 이것 get메소드를 불러오는것임 -->  
+ 
+
+	
+	
+			<select id="list2" resultType="com.mingyu.vo.ReplyVo">
+			
+			select * from reply where bid_tb= #{bid_tb}
+			order by rebid desc
+			</select>
+	
+			
+			<insert id="write2" >
+			
+			insert into reply(rebid, bid_tb, replyContent, regdate, replyer) values (AAA.NEXTVAL, #{bid_tb}, #{replycontent} ,sysdate, #{replyer})
+			
+			</insert>
+			
+			
+			<update id="modify2" >
+			
+			update reply set replyContent = #{replycontent}, updatedate=sysdate where rebid = #{rebid}
+			
+			</update>
+			
+			<delete id="delete2">
+			
+			delete from reply where rebid = #{rebid}
+			
+			</delete>
+	
+	
+			<select id="reListPage" resultType="com.mingyu.vo.ReplyVo" >
+			
+			
+						<![CDATA[
+						SELECT * FROM
+					    ( SELECT A.*,  ROWNUM AS RNUM
+					        FROM ( SELECT *  FROM
+					                    reply where  bid_tb = #{bid_tb}
+					                   
+					                ORDER BY rebid desc ) A
+					        WHERE ROWNUM <=  #{pCri.endPage}) 
+					    WHERE  RNUM >= #{pCri.strPage}
+						 ]]>
+			
+			
+			</select>
+	
+	
+			<select id="reCount" resultType="int">
+			
+				<![CDATA[
+		      select count(rebid) from reply where bid_tb = #{bid_tb}
+			]]>
+			
+			
+			</select>
+	
+     </mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+ <mapper namespace="com.mingyu.dao.UserDAO">         <!--    #{} 이것 get메소드를 불러오는것임 -->  
+ 
+
+	
+	
+	<insert id="userInsertUser">
+	
+	insert into user values (#{userid}, #{passwd}, #{name}, 1, #{authority})
+	</insert>
+	
+	 <select id="userSelectUser" resultType="java.util.Map">
+	 select userid as username, passwd as password, name, enabled, authority from users where userid = #{userid}
+	 </select>
+			
+			
+			
+
+	
+	
+	
+	
+</mapper>
